@@ -29,7 +29,7 @@ else:
     save_file_name = 'output.txt'
 
 if len(sys.argv) == 5:
-    save_with_timestamps = sys.argv[4]
+    save_with_timestamps = sys.argv[4] in ['True', 'true']
 else:
     save_with_timestamps = True
 
