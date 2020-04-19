@@ -9,7 +9,6 @@ def seconds_to_h_m_s_ms(seconds: float) -> str:
     s = int_seconds % 60
     m = int(int(int_seconds / 60) % 60)
     h = int(int_seconds / (60*60))
-
     return f"{h:02d}:{m:02d}:{s:02d}.{ms:02d}"
 
 
@@ -33,19 +32,22 @@ if len(sys.argv) == 5:
 else:
     save_with_timestamps = True
 
-
 video_id = sys.argv[1]
 translation_language = [sys.argv[2]]
 
-translation = YouTubeTranscriptApi.get_transcript(video_id, translation_language)
+translation = None
 
-f = open(save_file_name, "w")
+try:
+    translation = YouTubeTranscriptApi.get_transcript(video_id, translation_language)
+except Exception as e:
+    print(e)
 
-for item in translation:
-    if not save_with_timestamps:
-        f.write(item['text'] + "\n")
-    else:
-        start_time = item['start']
-        f.write(seconds_to_h_m_s_ms(start_time) + " -> " + item['text'].replace('\n', '') + "\n")
-
-f.close()
+if translation is not None:
+    f = open(save_file_name, "w")
+    for item in translation:
+        if not save_with_timestamps:
+            f.write(item['text'] + "\n")
+        else:
+            start_time = item['start']
+            f.write(seconds_to_h_m_s_ms(start_time) + " -> " + item['text'].replace('\n', '') + "\n")
+    f.close()
