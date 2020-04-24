@@ -15,5 +15,17 @@ pip3 install -r ./requirements.txt
 ## Run the script
 
 ```shell script
-python3 main.py 4-eDoThe6qo de nicos_weg.txt
+python3 main.py 4-eDoThe6qo -l de -o nicos_weg.txt
+```
+
+### Download with translation
+
+```shell script
+python3 main.py 4-eDoThe6qo -l de -o nicos_weg.txt -t en
+```
+
+### Get available transcript list
+
+```shell script
+python3 main.py 4-eDoThe6qo -g
 ```

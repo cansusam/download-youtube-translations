@@ -3,17 +3,18 @@ from util import seconds_to_h_m_s_ms
 from argparser import args
 
 video_id = args.video_id
-transcript_language = [args.transcript_language]
+transcript_language = [args.language]
 save_file_name = args.output
 save_with_timestamps = args.save_with_timestamps
 translation_language = args.translate
-get_list = args.list
+get_list = args.get
 
 language_list = YouTubeTranscriptApi.list_transcripts(video_id)
 
 if get_list:
     print(language_list)
     exit()
+
 
 def get_translation(transcript, file_name, lang=None):
     if lang is not None:
