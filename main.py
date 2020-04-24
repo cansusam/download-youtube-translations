@@ -1,53 +1,46 @@
 from youtube_transcript_api import YouTubeTranscriptApi
+from util import seconds_to_h_m_s_ms
+from argparser import args
 
-import sys
+video_id = args.video_id
+transcript_language = [args.transcript_language]
+save_file_name = args.output
+save_with_timestamps = args.save_with_timestamps
+translation_language = args.translate
+get_list = args.list
 
+language_list = YouTubeTranscriptApi.list_transcripts(video_id)
 
-def seconds_to_h_m_s_ms(seconds: float) -> str:
-    int_seconds = int(seconds)
-    ms = int(str(seconds).split('.')[1])
-    s = int_seconds % 60
-    m = int(int(int_seconds / 60) % 60)
-    h = int(int_seconds / (60*60))
-    return f"{h:02d}:{m:02d}:{s:02d}.{ms:02d}"
-
-
-if len(sys.argv) < 3:
-    print("There should be at least 2 arguments, video_id  translation_language [file_name] [time_stamp_true]")
-    video_id = sys.argv[1]
-    language_list = YouTubeTranscriptApi.list_transcripts(video_id)
-    if len(language_list) > 0:
-        print("Available languages for the given video:")
-    for lang in language_list:
-        print(lang)
+if get_list:
+    print(language_list)
     exit()
 
-if len(sys.argv) >= 4:
-    save_file_name = sys.argv[3]
-else:
-    save_file_name = 'output.txt'
-
-if len(sys.argv) == 5:
-    save_with_timestamps = sys.argv[4] in ['True', 'true']
-else:
-    save_with_timestamps = True
-
-video_id = sys.argv[1]
-translation_language = [sys.argv[2]]
-
-translation = None
-
-try:
-    translation = YouTubeTranscriptApi.get_transcript(video_id, translation_language)
-except Exception as e:
-    print(e)
-
-if translation is not None:
-    f = open(save_file_name, "w")
-    for item in translation:
+def get_translation(transcript, file_name, lang=None):
+    if lang is not None:
+        file_name = lang + "-" + file_name
+    f = open(file_name, "w")
+    for item in transcript:
         if not save_with_timestamps:
             f.write(item['text'] + "\n")
         else:
             start_time = item['start']
             f.write(seconds_to_h_m_s_ms(start_time) + " -> " + item['text'].replace('\n', '') + "\n")
     f.close()
+
+
+transcript = None
+
+try:
+    transcript = YouTubeTranscriptApi.get_transcript(video_id, transcript_language)
+except Exception as e:
+    print(e)
+
+
+if transcript is not None:
+    get_translation(transcript, save_file_name)
+    if translation_language is not None:
+        translated_transcript = language_list.\
+            find_transcript(transcript_language).\
+            translate(translation_language).\
+            fetch()
+        get_translation(translated_transcript, save_file_name, translation_language)
