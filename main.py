@@ -25,7 +25,7 @@ def get_translation(transcript, file_name, lang=None):
             f.write(item['text'] + "\n")
         else:
             start_time = item['start']
-            f.write(seconds_to_h_m_s_ms(start_time) + " -> " + item['text'].replace('\n', '') + "\n")
+            f.write(seconds_to_h_m_s_ms(start_time) + " -> " + item['text'].replace('\n', ' ') + "\n")
     f.close()
 
 
